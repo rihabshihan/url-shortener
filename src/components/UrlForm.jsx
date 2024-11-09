@@ -1,61 +1,115 @@
-import React, { useState } from 'react'; //useState: A hook for managing local state within the component
-import { useDispatch, useSelector } from 'react-redux'; //useSelector: A hook to extract data from the Redux store.
-import { addUrl } from '../redux/slices/urlSlice';
-import { shortenUrl } from '../utils/urlShortener';
+import React, { useState } from 'react';
 
-function UrlForm() {
-  const [title, setTitle] = useState(''); // variables to store the input values for the title 
+function URLForm() {
   const [url, setUrl] = useState('');
-  const dispatch = useDispatch();
-  const urls = useSelector((state) => state.urls.urls);
-  const { user } = useSelector((state) => state.auth);
+  const [title, setTitle] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Allow URL addition only if the user is logged in and matches the registered credentials
-    const registeredUser = JSON.parse(localStorage.getItem('registeredUser'));
-    if (registeredUser && registeredUser.email === user.email && registeredUser.password === user.password) {
-      if (urls.filter((u) => u.user === user.email).length >= 5) {  //the user has already added 5 URLs, an alert is shown, and no new URL is added.
-        alert('You can only add 5 URLs per day.');
-        return;
-      }
-      const shortUrl = shortenUrl(url);
-      dispatch(addUrl({ id: Date.now(), title, originalUrl: url, shortUrl, addedAt: new Date().toISOString(), user: user.email }));
-      setTitle('');
-      setUrl('');
-    } else {
-      alert('Invalid session. Please log in again.');
+    if (!url || !title) {
+      setError('Both fields are required!');
+      return;
     }
+    setError('');
+    // Handle URL submission logic here
+    console.log('URL Submitted:', { url, title });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label>Title</label>
-        <input
-          type="text"
-          className="form-control"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label>URL</label>
-        <input
-          type="url"
-          className="form-control"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">
-        Shorten URL
-      </button>
-    </form>
+    <div style={containerStyle}>
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <h2 style={headerStyle}>Add Your URL</h2>
+        <div style={inputGroupStyle}>
+          <label htmlFor="title" style={labelStyle}>Title</label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter title"
+            style={inputStyle}
+          />
+        </div>
+        <div style={inputGroupStyle}>
+          <label htmlFor="url" style={labelStyle}>URL</label>
+          <input
+            type="url"
+            id="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="Enter URL"
+            style={inputStyle}
+          />
+        </div>
+        {error && <p style={errorStyle}>{error}</p>}
+        <button type="submit" style={submitButtonStyle}>Submit</button>
+      </form>
+    </div>
   );
 }
 
-export default UrlForm;
+// Styles
+const containerStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100vh', // Full screen height
+  backgroundColor: 'black',
+  color: 'white',
+};
+
+const formStyle = {
+  backgroundColor: '#222',
+  padding: '30px 40px',
+  borderRadius: '8px',
+  width: '100%',
+  maxWidth: '500px', // Max width for larger screens
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+};
+
+const headerStyle = {
+  textAlign: 'center',
+  marginBottom: '20px',
+  fontSize: '1.8rem',
+};
+
+const inputGroupStyle = {
+  marginBottom: '15px',
+};
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '1rem',
+  marginBottom: '5px',
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '10px',
+  fontSize: '1rem',
+  border: '1px solid #555',
+  borderRadius: '4px',
+  backgroundColor: '#333',
+  color: 'white',
+};
+
+const errorStyle = {
+  color: 'red',
+  textAlign: 'center',
+  marginBottom: '15px',
+};
+
+const submitButtonStyle = {
+  width: '100%',
+  padding: '12px',
+  fontSize: '1.1rem',
+  color: 'white',
+  backgroundColor: '#ff9900',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
+};
+
+export default URLForm;

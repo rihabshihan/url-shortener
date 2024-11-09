@@ -7,19 +7,51 @@ function HomePage() {
   const { user } = useSelector((state) => state.auth);
 
   return (
-    <div className="home-page">
-      {user ? (
-        //UrlForm: Allows users to add new URLs.
-        //UrlList: Displays the list of URLs associated with the logged-in user.
-        <>
-          <UrlForm /> 
-          <UrlList />
-        </>
-      ) : (
-        <p>Please log in to manage your URLs.</p> //If user is false (i.e., the user is not logged in): shows this message!
-      )}
+    <div style={mainContainerStyle}>
+      <div style={homePageStyle}>
+        {user ? (
+          <>
+            <UrlForm />
+            <div style={urlListMarginStyle}>
+              <UrlList />
+            </div>
+          </>
+        ) : (
+          <p style={messageStyle}>Please log in to manage your URLs.</p>
+        )}
+      </div>
     </div>
   );
 }
+
+// Inline styles
+
+// Main container to apply black background
+const mainContainerStyle = {
+  backgroundColor: 'black',
+  minHeight: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '20px',
+};
+
+// HomePage content
+const homePageStyle = {
+  color: 'white',
+  width: '100%',
+  textAlign: 'center',
+  maxWidth: '800px',
+};
+
+const messageStyle = {
+  color: '#ff9900',
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+};
+
+const urlListMarginStyle = {
+  marginTop: '20px',
+};
 
 export default HomePage;
